@@ -1,0 +1,46 @@
+// Theme colors for light and dark modes
+export const lightTheme = {
+  primary: '#007AFF',
+  background: '#FFFFFF',
+  card: '#FFFFFF',
+  text: '#000000',
+  border: '#E5E5E7',
+  notification: '#FF3B30',
+  surface: '#F2F2F7',
+  onSurface: '#000000',
+  primaryContainer: '#E3F2FD',
+  onPrimaryContainer: '#004881',
+  secondary: '#5856D6',
+  onSecondary: '#FFFFFF',
+  success: '#34C759',
+  warning: '#FF9500',
+  error: '#FF3B30',
+  textSecondary: '#8E8E93',
+  tabBarActive: '#007AFF',
+  tabBarInactive: '#8E8E93',
+  statusBar: 'dark-content' as const,
+};
+
+export const darkTheme = {
+  primary: '#0A84FF',
+  background: '#000000',
+  card: '#1C1C1E',
+  text: '#FFFFFF',
+  border: '#38383A',
+  notification: '#FF453A',
+  surface: '#1C1C1E',
+  onSurface: '#FFFFFF',
+  primaryContainer: '#004881',
+  onPrimaryContainer: '#E3F2FD',
+  secondary: '#5E5CE6',
+  onSecondary: '#FFFFFF',
+  success: '#30D158',
+  warning: '#FF9F0A',
+  error: '#FF453A',
+  textSecondary: '#8E8E93',
+  tabBarActive: '#0A84FF',
+  tabBarInactive: '#8E8E93',
+  statusBar: 'light-content' as const,
+};
+
+export type ThemeColors = typeof lightTheme | typeof darkTheme;

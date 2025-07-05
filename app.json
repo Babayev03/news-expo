@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "news",
+    "slug": "news",
+    "developmentClient": {
+      "nativePageReloads": true
+    },
+    "version": "1.0.0",
+    "web": {
+      "favicon": "./src/assets/images/app/favicon.png"
+    },
+    "experiments": {
+      "tsconfigPaths": true
+    },
+    "plugins": [],
+    "orientation": "portrait",
+    "icon": "./src/assets/images/app/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./src/assets/images/app/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ilhamstr.news"
+    },
+    "android": {
+      "edgeToEdgeEnabled": true,
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/images/app/icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.ilhamstr.news"
+    }
+  }
+}
