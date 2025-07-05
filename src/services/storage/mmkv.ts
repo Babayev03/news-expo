@@ -8,7 +8,6 @@ export const storage = new MMKV({
   mode: Mode.MULTI_PROCESS,
   readOnly: false,
 });
-storage.clearAll();
 
 // Type-safe storage operations
 export const StorageService = {

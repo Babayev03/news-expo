@@ -1,6 +1,6 @@
-import React, { memo, useRef } from 'react';
+import React, { memo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Animated } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useTheme } from '~/hooks/useTheme';
@@ -28,6 +28,7 @@ const NewsCard = memo(({ article, onPress }: NewsCardProps) => {
   const lastTapRef = useRef<number>(0);
   const heartScale = useRef(new Animated.Value(0)).current;
   const heartOpacity = useRef(new Animated.Value(0)).current;
+  const [imageError, setImageError] = useState(false);
 
   const handleFavoritePress = () => {
     toggleFavorite(article.id);
@@ -109,27 +110,33 @@ const NewsCard = memo(({ article, onPress }: NewsCardProps) => {
       onPress={handleCardPress}
       activeOpacity={0.8}>
       {/* Image */}
-      {article.imageUrl && (
-        <View style={styles.imageContainer}>
+      <View style={styles.imageContainer}>
+        {article.imageUrl && !imageError ? (
           <Image
             source={{ uri: article.imageUrl }}
             style={styles.image}
             resizeMode="cover"
             key={article.id}
+            onError={() => setImageError(true)}
           />
-          {/* Double-tap heart animation */}
-          <Animated.View
-            style={[
-              styles.doubleTapHeart,
-              {
-                transform: [{ scale: heartScale }],
-                opacity: heartOpacity,
-              },
-            ]}>
-            <FontAwesome name="heart" size={60} color={colors.error} />
-          </Animated.View>
-        </View>
-      )}
+        ) : (
+          <View
+            style={[styles.image, styles.placeholderContainer, { backgroundColor: colors.border }]}>
+            <MaterialIcons name="image" size={48} color={colors.textSecondary} />
+          </View>
+        )}
+        {/* Double-tap heart animation */}
+        <Animated.View
+          style={[
+            styles.doubleTapHeart,
+            {
+              transform: [{ scale: heartScale }],
+              opacity: heartOpacity,
+            },
+          ]}>
+          <FontAwesome name="heart" size={60} color={colors.error} />
+        </Animated.View>
+      </View>
 
       {/* Content */}
       <View style={styles.content}>
@@ -187,6 +194,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
   },
+  placeholderContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   doubleTapHeart: {
     position: 'absolute',
     top: '50%',
@@ -229,6 +240,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   author: {
+    width: '80%',
     fontSize: typography.fontSizes.sm,
     fontWeight: typography.fontWeights.medium,
   },
