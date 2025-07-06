@@ -22,6 +22,7 @@ export function useNewsData() {
     setOffline,
     updateSyncTime,
     setPage,
+    clearArticles,
   } = useNewsStore();
 
   // Monitor network connectivity
@@ -36,9 +37,11 @@ export function useNewsData() {
   // Fetch initial news data
   const fetchNews = useCallback(
     async (refresh = false) => {
+      // Always show loading state during fetch process
+      setLoading(true);
+      setError(null);
+
       if (refresh) {
-        setLoading(true);
-        setError(null);
         setPage(1);
         // Clear cache when explicitly refreshing
         newsApi.clearCache();
@@ -104,10 +107,11 @@ export function useNewsData() {
 
   // Initialize data on mount
   useEffect(() => {
-    if (articles.length === 0) {
-      fetchNews();
-    }
-  }, [articles.length, fetchNews]);
+    // Clear articles on app start to show empty state initially
+    clearArticles();
+    // Always fetch fresh data on app launch
+    fetchNews();
+  }, [fetchNews, clearArticles]);
 
   return {
     articles,

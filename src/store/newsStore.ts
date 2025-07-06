@@ -40,6 +40,9 @@ interface NewsState {
 
   // Reset
   reset: () => void;
+
+  // Clear articles (for fresh app start)
+  clearArticles: () => void;
 }
 
 // MMKV storage adapter for Zustand
@@ -122,12 +125,14 @@ export const useNewsStore = create<NewsState>()(
           hasMore: true,
           page: 1,
         }),
+
+      // Clear articles (for fresh app start)
+      clearArticles: () => set({ articles: [] }),
     }),
     {
       name: 'news-store',
       storage: createJSONStorage(() => mmkvStorage),
       partialize: (state) => ({
-        articles: state.articles,
         favorites: state.favorites,
         lastSyncTime: state.lastSyncTime,
       }),

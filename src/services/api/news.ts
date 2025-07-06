@@ -2,6 +2,7 @@ import apiClient from './client';
 import { NewsArticle, NewsCategory } from '~/types/news';
 import { PaginatedResponse } from '~/types/common';
 import { StorageService } from '~/services/storage/mmkv';
+import NetInfo from '@react-native-community/netinfo';
 
 // Cache keys
 const CACHE_KEYS = {
@@ -58,7 +59,13 @@ const transformNewsApiArticle = (item: any): NewsArticle => {
 };
 
 // Fetch news articles using everything endpoint for better results
-const fetchNewsArticles = async (page = 1, limit = 10): Promise<NewsArticle[]> => {
+const fetchNewsArticles = async (
+  page = 1,
+  limit = 10
+): Promise<{
+  articles: NewsArticle[];
+  total: number;
+}> => {
   try {
     const response = await apiClient.get('/everything', {
       params: {
@@ -71,7 +78,10 @@ const fetchNewsArticles = async (page = 1, limit = 10): Promise<NewsArticle[]> =
     });
 
     if (response.data.articles) {
-      return response.data.articles.map(transformNewsApiArticle);
+      return {
+        articles: response.data.articles.map(transformNewsApiArticle),
+        total: response.data.totalResults,
+      };
     }
 
     throw new Error('No articles found');
@@ -89,7 +99,10 @@ const fetchNewsArticles = async (page = 1, limit = 10): Promise<NewsArticle[]> =
       });
 
       if (fallbackResponse.data.articles) {
-        return fallbackResponse.data.articles.map(transformNewsApiArticle);
+        return {
+          articles: fallbackResponse.data.articles.map(transformNewsApiArticle),
+          total: fallbackResponse.data.totalResults || fallbackResponse.data.articles.length,
+        };
       }
     } catch (fallbackError) {
       console.error('Top headlines fallback also failed:', fallbackError);
@@ -104,8 +117,9 @@ export const newsApi = {
   // Get paginated news articles
   getNews: async (page = 1, limit = 10): Promise<PaginatedResponse<NewsArticle>> => {
     try {
+      const { isConnected } = await NetInfo.fetch();
       // Check cache first for offline support
-      if (page === 1 && isCacheValid()) {
+      if (page === 1 && isCacheValid() && !isConnected) {
         const cachedArticles = getCachedArticles();
         if (cachedArticles.length > 0) {
           const startIndex = (page - 1) * limit;
@@ -123,7 +137,8 @@ export const newsApi = {
       }
 
       // Try to fetch from APIs
-      const articles = await fetchNewsArticles(page, limit);
+      const { articles, total } = await fetchNewsArticles(page, limit);
+      // Total limited to 100 articles from the API
 
       // Cache the first page for offline access
       if (page === 1 && articles.length > 0) {
@@ -134,10 +149,10 @@ export const newsApi = {
 
       return {
         data: articles,
-        total: articles.length * 5, // Simulate more pages
+        total: 100,
         page,
         limit,
-        hasMore: page < 5, // Simulate 5 pages max
+        hasMore: page < Math.ceil(100 / limit),
       };
     } catch (error) {
       console.error('Error fetching news:', error);
